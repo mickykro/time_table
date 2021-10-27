@@ -1,6 +1,7 @@
+
 export default {
     state: {
         globalShifts: [],
-        chosenWorker: 0
+        users:[],
     }
 }

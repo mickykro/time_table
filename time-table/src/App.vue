@@ -6,6 +6,16 @@
   <router-view/>
 </template>
 
+<script>
+import db from './utils/db'
+export default {
+  mounted: async()=>{
+      db.getUsers()
+    }
+  }
+
+</script>
+
 <style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
