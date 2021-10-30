@@ -40,10 +40,8 @@ const getShifts = async () => {
   let shiftsMap = (await getDocs(query(endedShiftsCollection,orderBy('start','desc')))).docs
   let shiftsArray = []
   shiftsMap = shiftsMap.map(doc => {
-    console.log(`${doc.data().id}: started at: ${new Date(doc.data().start).toLocaleDateString('He-IL', { month: 'long', day: '2-digit', minute: '2-digit', hour: '2-digit' })} - ended : ${doc.data().end}`)
     shiftsArray.push(doc.data())
   })
-  console.log(shiftsArray)
   store.state.globalShifts = shiftsArray
   return shiftsArray
 }
@@ -65,19 +63,16 @@ const getEntity = async (collection, id) => {
 
 const isUserOnShift = async (id) => {
   const shift = await getEntity(collection(db, 'shifts'), id)
-  console.log('is the user on shift', shift)
   return shift
 }
 
 const enterOrExit = async (id) => {
   const userOnShift = await isUserOnShift(id)
-  console.log('enterExit -  is user on shift: ', userOnShift.docId)
   if (userOnShift.docId) {
    return {shift: endShift(id), enter:true}
     // .then(shift=> useToast().add({severity: 'info', summary: 'worker ended the shift', detail: `worked for ${functions.calculateShiftLength(shift)}`}))
   }
   else {
-    console.log('shift started')
     return {shift: entered(id), enter: false}
     // .then(shift=> useToast().add({severity: 'info', summary: 'worker entered the shift', detail: `started at ${new Date(shift.start).toLocaleString('He-IL', { month: 'long', day: '2-digit', minute: '2-digit', hour: '2-digit' })}`}))
   }

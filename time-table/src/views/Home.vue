@@ -21,7 +21,7 @@
        `finished working at ${new Date(Date.now()).toLocaleDateString('He-IL', {  minute: '2-digit', hour: '2-digit' })}`"></p>
        <button @click="openDialog = !openDialog">close</button>
        </div></teleport>
-      <input type="text" v-if="isNewUser" v-model="name" placeholder="enter name"/>
+      <input type="text" v-if="isNewUser" v-model="name" placeholder="enter name" />
       <button v-if="isNewUser" @click="newUser(id, name)">addUser</button>
       <div v-if="addError">
         please create a new user before entering the shift
@@ -45,7 +45,6 @@ export default {
       }
       if (functions.idExists(id)) {
         db.enterOrExit(id).then(({shift, enter}) => {
-          console.log('Home 48 : enter = ',enter)
           this.userInShift = enter;
           this.openDialog = true;
         });
@@ -72,10 +71,9 @@ export default {
       this.isNewUser = !functions.idExists(id);
     },
     hideError: function (event) {
-      console.log(event.key);
       if (/^[0-9]+$/.test(event.key)) {
         this.isDisabled = false;
-        this.error = false;
+        this.IDerror = false;
       }
     },
   },

@@ -1,5 +1,5 @@
 <template>
-<div>
+<div >
     <div v-for="shift in filterById" v-bind:key="shift" class="border border-primary shift">
     <div v-text="getName(shift.id)" class="border border-info"></div>
     <div  v-text="new Date(shift.start).toLocaleDateString('He-IL', {  minute: '2-digit', hour: '2-digit' })+ ' - '+ new Date(shift.end).toLocaleDateString('He-IL', {  minute: '2-digit', hour: '2-digit' })"></div>
