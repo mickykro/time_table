@@ -12,7 +12,8 @@ const routes = [
     path: '/admin',
     name: 'amdin',
     component: admin
-  }
+  },
+
 ]
 
 const router = createRouter({

@@ -1,9 +1,11 @@
 // DOCS: https://firebase.google.com/docs/firestore/query-data/get-data
 
 import { initializeApp } from 'firebase/app'
+import {useToast} from 'primevue/usetoast'
 import store from '../store'
 
-import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore/lite'
+import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, deleteDoc, query, orderBy } from 'firebase/firestore/lite'
+import functions from './functions';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAitY9e9Irqjo_M4hNHKODjBZJhlPdRUAo",
@@ -34,15 +36,18 @@ const getUsers = async () => {
   }
 }
 const getShifts = async () => {
-  let shiftsMap = (await getDocs(endedShiftsCollection)).docs
+  
+  let shiftsMap = (await getDocs(query(endedShiftsCollection,orderBy('start','desc')))).docs
   let shiftsArray = []
   shiftsMap = shiftsMap.map(doc => {
     console.log(`${doc.data().id}: started at: ${new Date(doc.data().start).toLocaleDateString('He-IL', { month: 'long', day: '2-digit', minute: '2-digit', hour: '2-digit' })} - ended : ${doc.data().end}`)
     shiftsArray.push(doc.data())
   })
   console.log(shiftsArray)
+  store.state.globalShifts = shiftsArray
   return shiftsArray
 }
+
 const getEntity = async (collection, id) => {
   let userDoc
   let docId
@@ -57,6 +62,7 @@ const getEntity = async (collection, id) => {
   return { userDoc, docId }
 }
 
+
 const isUserOnShift = async (id) => {
   const shift = await getEntity(collection(db, 'shifts'), id)
   console.log('is the user on shift', shift)
@@ -65,11 +71,15 @@ const isUserOnShift = async (id) => {
 
 const enterOrExit = async (id) => {
   const userOnShift = await isUserOnShift(id)
+  console.log('enterExit -  is user on shift: ', userOnShift.docId)
   if (userOnShift.docId) {
-    endShift(id)
+   return {shift: endShift(id), enter:true}
+    // .then(shift=> useToast().add({severity: 'info', summary: 'worker ended the shift', detail: `worked for ${functions.calculateShiftLength(shift)}`}))
   }
   else {
-    entered(id)
+    console.log('shift started')
+    return {shift: entered(id), enter: false}
+    // .then(shift=> useToast().add({severity: 'info', summary: 'worker entered the shift', detail: `started at ${new Date(shift.start).toLocaleString('He-IL', { month: 'long', day: '2-digit', minute: '2-digit', hour: '2-digit' })}`}))
   }
 }
 
@@ -83,10 +93,13 @@ const endShift = async (id) => {
     addDoc(endedShiftsCollection, shift)
     deleteDoc(doc(shiftsCollection, shiftEntity.docId))
   }
+  return shift
 }
 const entered = async (id) => {
   try {
-    await addDoc(collection(db, 'shifts'), { id, start: Date.now(), onClock: true });
+    const shift = { id, start: Date.now(), onClock: true }
+    await addDoc(collection(db, 'shifts'), shift);
+    return shift
   } catch (error) {
     console.log("🚀 ~ file: db.js ~ line 36 ~ addValue ~ error", error)
   }

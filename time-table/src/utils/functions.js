@@ -17,5 +17,18 @@ const isUserOnShift = (id) =>{
 
     }
 }
+const calculateShiftLength = (shift)=>{
+    
+    return `shift legnth:  ${Math.floor((shift.end - shift.start)/1000/60/60)}.${Math.floor((shift.end - shift.start)/1000/60%60%10)}`
+}
+const getNameById = (id)=>{
+    let name = ''
+    store.state.users.forEach(user=>{
+      if(user.id == id){
+        name = user.name
+      }
+    })
+    return name
+  }
 
-export default { idExists, isUserOnShift}
+export default { idExists, isUserOnShift, calculateShiftLength, getNameById}

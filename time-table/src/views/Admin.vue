@@ -1,6 +1,7 @@
 <template>
   <div class="Admin">
     <h1>these are the shifts</h1>
+    <button @click="chosenWorker = 0" :style="{marginRight:'5px'}">view all shifts</button>
     <select v-model="chosenWorker" name="worker" id="worker" v-if="workers">
       <option
         selected="worker.id"
@@ -31,6 +32,7 @@ export default {
     };
   },
   mounted: function () {
+    
     db.getUsers();
   },
 };
