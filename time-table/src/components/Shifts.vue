@@ -1,8 +1,8 @@
 <template>
 <div>
-    <div v-for="shift in filterById" v-bind:key="shift">
-    <div v-text="shift.id"></div>
-    <div  v-text=" new Date(shift.start)"></div>
+    <div v-for="shift in filterById" v-bind:key="shift" class="border border-primary shift">
+    <div v-text="getName(shift.id)" class="border border-info"></div>
+    <div  v-text="new Date(shift.start).toLocaleDateString('He-IL', {  minute: '2-digit', hour: '2-digit' })+ ' - '+ new Date(shift.end).toLocaleDateString('He-IL', {  minute: '2-digit', hour: '2-digit' })"></div>
     <div  v-text="calculateLength(shift)"> </div>
   </div>
 </div>
@@ -10,6 +10,7 @@
 <script>
 import store from '../store'
 import db from '../utils/db'
+import functions from '../utils/functions'
 export default {
     props: {
         workerId: 0
@@ -28,19 +29,23 @@ export default {
     },
     methods: {
          calculateLength: (shift)=>{
-            return `${Math.floor((shift.end - shift.start)/1000/60/60)}.${Math.floor((shift.end - shift.start)/1000/60)}`
+            return  functions.calculateShiftLength(shift)
         },
         firstShift(){
              return this.currentShifts.length <1
+         },
+         getName(id){
+             return functions.getNameById(id)
          }
     },
+    
     computed:{
         filterById(){
            if(this.workerId > 0){
                this.currentShifts = 
                  store.state.globalShifts.filter(
                     shift => {
-                       return shift.id == this.workerId})
+                       return shift.id == this.workerId })
                        return this.currentShifts
            }
             this.currentShifts =  store.state.globalShifts
@@ -49,3 +54,10 @@ export default {
     }
 }
 </script>
+<style >
+.shift{
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-top: 3px;
+}
+</style>
